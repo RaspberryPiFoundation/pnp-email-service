@@ -32,7 +32,10 @@ module.exports = env => {
     resolve(pug.renderFile(filename, data))
   })
 
-  const processIfExists = (filename, data, func) => fileExists(filename).then(exists => exists ? func(filename, data) : void 0)
+  const processIfExists = ({ filename, template }, data, func) =>
+    fileExists(filename).then(exists => exists ?
+      func(filename, data) :
+      func(fullPath(`${env('missingLanguageFallback')()}/${template}`), data));
 
   service.processTemplate = (template, templateOptions, lang = defaultLanguage) => {
     const pathEjsHtmlBody = fullPath(`${lang}/${template}-body-html.ejs`)
@@ -41,10 +44,10 @@ module.exports = env => {
     const pathEjsSubject = fullPath(`${lang}/${template}-subject.ejs`)
 
     return Promise.all([
-      processIfExists(pathEjsHtmlBody, templateOptions, renderEjs),
-      processIfExists(pathPugHtmlBody, templateOptions, renderPug),
-      processIfExists(pathEjsTextBody, templateOptions, renderEjs),
-      processIfExists(pathEjsSubject, templateOptions, renderEjs)
+      processIfExists({ filename: pathEjsHtmlBody, template: `${template}-body-html.ejs` }, templateOptions, renderEjs),
+      processIfExists({ filename: pathPugHtmlBody, template: `${template}-body-html.ejs` }, templateOptions, renderPug),
+      processIfExists({ filename: pathEjsTextBody, template: `${template}-body-html.ejs` }, templateOptions, renderEjs),
+      processIfExists({ filename: pathEjsSubject, template: `${template}-body-html.ejs` }, templateOptions, renderEjs)
     ])
     .then(([ejsHtmlBody, pugHtmlBody, ejsTextBody, ejsSubject]) => {
       return {
