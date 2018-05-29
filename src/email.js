@@ -35,7 +35,9 @@ module.exports = env => {
   const processIfExists = ({ filename, template }, data, func) =>
     fileExists(filename).then(exists => exists ?
       func(filename, data) :
-      func(fullPath(`${env('missingLanguageFallback')()}/${template}`), data));
+        env('missingLanguageFallback') ?
+        func(fullPath(`${env('missingLanguageFallback')()}/${template}`), data) :
+        void 0);
 
   service.processTemplate = (template, templateOptions, lang = defaultLanguage) => {
     const pathEjsHtmlBody = fullPath(`${lang}/${template}-body-html.ejs`)
