@@ -34,11 +34,16 @@ module.exports = env => {
 
   const processIfExists = (filename, data, func) => fileExists(filename).then(exists => exists ? func(filename, data) : void 0)
 
+  const formatFullPath = env('formatFunction') ? env('formatFunction') :
+    (lang, template, target, format, type) => format ?
+      `${lang}/${template}-${target}-${format}.${type}` :
+      `${lang}/${template}-${target}.${type}`
+
   service.processTemplate = (template, templateOptions, lang = defaultLanguage) => {
-    const pathEjsHtmlBody = fullPath(`${lang}/${template}-body-html.ejs`)
-    const pathPugHtmlBody = fullPath(`${lang}/${template}-body-html.pug`)
-    const pathEjsTextBody = fullPath(`${lang}/${template}-body-text.ejs`)
-    const pathEjsSubject = fullPath(`${lang}/${template}-subject.ejs`)
+    const pathEjsHtmlBody = fullPath(formatFullPath(lang, template, 'body', 'html', 'ejs'))
+    const pathPugHtmlBody = fullPath(formatFullPath(lang, template, 'body', 'html', 'pug'))
+    const pathEjsTextBody = fullPath(formatFullPath(lang, template, 'body', 'text', 'ejs'))
+    const pathEjsSubject = fullPath(formatFullPath(lang, template, 'subject', null ,'ejs'))
 
     return Promise.all([
       processIfExists(pathEjsHtmlBody, templateOptions, renderEjs),
