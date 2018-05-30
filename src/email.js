@@ -32,29 +32,38 @@ module.exports = env => {
     resolve(pug.renderFile(filename, data))
   })
 
-  const processIfExists = ({ filename, template }, data, func) =>
-    fileExists(filename).then(exists => exists ?
-      func(filename, data) :
-        env('missingLanguageFallback') ?
-        func(fullPath(`${env('missingLanguageFallback')()}/${template}`), data) :
-        void 0);
+  const processIfExists = async ({ filename, formatter }, data, func) => {
+    const fullPathFile = fullPath(filename);
+    const originalPathExists = await fileExists(fullPathFile);
+    const alternativeFullPathFile = fullPath(formatter(env('missingLanguageFallback')()));
+    const alternativePathExists = await fileExists(alternativeFullPathFile);
+    return originalPathExists ?
+      func(fullPathFile, data) :
+        env('missingLanguageFallback') && alternativePathExists ?
+          func(alternativeFullPathFile, data) :
+          void 0;
+  }
 
   const formatFullPath = env('formatFunction') ? env('formatFunction') :
-    (lang, template, target, format, type) => format ?
+    (template, target, format, type, lang) => format ?
       `${lang}/${template}-${target}-${format}.${type}` :
       `${lang}/${template}-${target}.${type}`
 
   service.processTemplate = (template, templateOptions, lang = defaultLanguage) => {
-    const pathEjsHtmlBody = fullPath(formatFullPath(lang, template, 'body', 'html', 'ejs'))
-    const pathPugHtmlBody = fullPath(formatFullPath(lang, template, 'body', 'html', 'pug'))
-    const pathEjsTextBody = fullPath(formatFullPath(lang, template, 'body', 'text', 'ejs'))
-    const pathEjsSubject = fullPath(formatFullPath(lang, template, 'subject', null ,'ejs'))
+    const formatPathEjsBody = formatFullPath.bind(null, template, 'body', 'html', 'ejs')
+    const formatPathPugBody = formatFullPath.bind(null, template, 'body', 'html', 'pug')
+    const formatPathEjsText = formatFullPath.bind(null, template, 'body', 'text', 'ejs')
+    const formatPathEjsSubject = formatFullPath.bind(null, template, 'subject', null, 'ejs')
+    const pathEjsHtmlBody = formatPathEjsBody(lang)
+    const pathPugHtmlBody = formatPathPugBody(lang)
+    const pathEjsTextBody = formatPathEjsText(lang)
+    const pathEjsSubject = formatPathEjsSubject(lang)
 
     return Promise.all([
-      processIfExists({ filename: pathEjsHtmlBody, template: `${template}-body-html.ejs` }, templateOptions, renderEjs),
-      processIfExists({ filename: pathPugHtmlBody, template: `${template}-body-html.ejs` }, templateOptions, renderPug),
-      processIfExists({ filename: pathEjsTextBody, template: `${template}-body-html.ejs` }, templateOptions, renderEjs),
-      processIfExists({ filename: pathEjsSubject, template: `${template}-body-html.ejs` }, templateOptions, renderEjs)
+      processIfExists({ filename: pathEjsHtmlBody, formatter: formatPathEjsBody }, templateOptions, renderEjs),
+      processIfExists({ filename: pathPugHtmlBody, formatter: formatPathPugBody }, templateOptions, renderPug),
+      processIfExists({ filename: pathEjsTextBody, formatter: formatPathEjsText }, templateOptions, renderEjs),
+      processIfExists({ filename: pathEjsSubject, formatter: formatPathEjsSubject }, templateOptions, renderEjs)
     ])
     .then(([ejsHtmlBody, pugHtmlBody, ejsTextBody, ejsSubject]) => {
       return {
