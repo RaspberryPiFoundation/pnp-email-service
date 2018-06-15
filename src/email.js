@@ -44,7 +44,7 @@ module.exports = env => {
           void 0;
   }
 
-  const formatFullPath = env('formatFunction') ? env('formatFunction') :
+  const formatFullPath = env('templatePathFormatter') ? env('templatePathFormatter') :
     (template, target, format, type, lang) => format ?
       `${lang}/${template}-${target}-${format}.${type}` :
       `${lang}/${template}-${target}.${type}`
