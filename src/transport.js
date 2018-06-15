@@ -49,7 +49,7 @@ module.exports = env => {
         secure: (env('SMTP_SECURE') == 'true'), // eslint-disable-line eqeqeq
         ignoreTLS: (env('SMTP_SECURE') == 'false'), // eslint-disable-line eqeqeq
       } 
-      return nodemailer.createTransport(auth ? config: {...config, auth })
+      return nodemailer.createTransport({...config, auth })
     case 'stub':
       return nodemailer.createTransport(stub())
     default:
