@@ -35,7 +35,7 @@ module.exports = env => {
   const processIfExists = async ({ filename, formatter }, data, func) => {
     const fullPathFile = fullPath(filename);
     const originalPathExists = await fileExists(fullPathFile);
-    const alternativeFullPathFile = fullPath(formatter(env('languageFallback')()));
+    const alternativeFullPathFile = fullPath(formatter((env('languageFallback'))()));
     const alternativePathExists = await fileExists(alternativeFullPathFile);
     return originalPathExists ?
       func(fullPathFile, data) :
