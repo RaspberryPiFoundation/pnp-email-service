@@ -9,10 +9,13 @@
   },
   "homepage": "https://github.com/clevertech/email-service#readme",
   "main": "src/index.js",
+  "engines" : { 
+    "node" : ">=14"
+  },
   "scripts": {
     "start": "better-npm-run start",
     "start-dev": "nodemon",
-    "test": "MICROSERVICE_PORT=3001 ava --verbose --fail-fast",
+    "test": "MICROSERVICE_PORT=3001 ava --verbose",
     "lint": "standard"
   },
   "betterScripts": {

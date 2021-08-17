@@ -5,7 +5,13 @@ process.env.TEMPLATES_DIR = path.join(__dirname, 'templates')
 process.env.TRANSPORT = 'stub'
 const fetch = require('./_fetch')
 
-const env = require('../src/utils/env')()
+const config = {
+  languageFallback: () => {
+    return 'en';
+  },
+}
+
+const env = require('../src/utils/env')(config)
 const email = require('../src/email')(env)
 
 test('render template with ejs body', t => {
