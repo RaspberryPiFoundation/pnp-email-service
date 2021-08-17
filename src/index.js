@@ -49,7 +49,7 @@ exports.startServer = (config, callback) => {
   app.use('/email', router)
 
   app.get('/healthz', (req, res) => {
-    res.status(200).send({ 'status': 'OK' })
+    res.status(200).send({ status: 'OK' })
   })
 
   app.get('/robots.txt', (req, res) => {

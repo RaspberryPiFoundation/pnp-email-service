@@ -7,8 +7,8 @@ const fetch = require('./_fetch')
 
 const config = {
   languageFallback: () => {
-    return 'en';
-  },
+    return 'en'
+  }
 }
 
 const env = require('../src/utils/env')(config)
@@ -71,14 +71,14 @@ test('successful rest API call', t => {
       }
     }
   })
-  .then(response => {
-    t.is(response.status, 200)
-    return response.json()
-  })
-  .then(body => {
-    t.truthy(body.messageId)
-    t.deepEqual(body.envelope, { from: 'judy@example.com', to: [ 'john@example.com' ] })
-  })
+    .then(response => {
+      t.is(response.status, 200)
+      return response.json()
+    })
+    .then(body => {
+      t.truthy(body.messageId)
+      t.deepEqual(body.envelope, { from: 'judy@example.com', to: ['john@example.com'] })
+    })
 })
 
 test('failed rest API call', t => {
@@ -94,13 +94,13 @@ test('failed rest API call', t => {
       }
     }
   })
-  .then(response => {
-    t.is(response.status, 500)
-    return response.json()
-  })
-  .then(body => {
-    t.truthy(body.error.indexOf('Cannot read property \'name\' of undefined') > 0)
-  })
+    .then(response => {
+      t.is(response.status, 500)
+      return response.json()
+    })
+    .then(body => {
+      t.truthy(body.error.indexOf('Cannot read property \'name\' of undefined') > 0)
+    })
 })
 
 test('bad API call request', t => {
@@ -108,11 +108,11 @@ test('bad API call request', t => {
     method: 'POST',
     body: {}
   })
-  .then(response => {
-    t.is(response.status, 400)
-    return response.json()
-  })
-  .then(body => {
-    t.truthy(body.error.indexOf('"templateName" is required') > 0)
-  })
+    .then(response => {
+      t.is(response.status, 400)
+      return response.json()
+    })
+    .then(body => {
+      t.truthy(body.error.indexOf('"templateName" is required') > 0)
+    })
 })

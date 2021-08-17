@@ -3,8 +3,8 @@ const baseURL = `http://127.0.0.1:${process.env.MICROSERVICE_PORT}`
 
 const config = {
   languageFallback: () => {
-    return 'en';
-  },
+    return 'en'
+  }
 }
 
 require('../').startServer(config)

@@ -33,21 +33,21 @@ module.exports = env => {
   })
 
   const processIfExists = async ({ filename, formatter }, data, func) => {
-    const fullPathFile = fullPath(filename);
-    const originalPathExists = await fileExists(fullPathFile);
-    const alternativeFullPathFile = fullPath(formatter((env('languageFallback'))()));
-    const alternativePathExists = await fileExists(alternativeFullPathFile);
-    return originalPathExists ?
-      func(fullPathFile, data) :
-        env('languageFallback') && alternativePathExists ?
-          func(alternativeFullPathFile, data) :
-          void 0;
+    const fullPathFile = fullPath(filename)
+    const originalPathExists = await fileExists(fullPathFile)
+    const alternativeFullPathFile = fullPath(formatter((env('languageFallback'))()))
+    const alternativePathExists = await fileExists(alternativeFullPathFile)
+    return originalPathExists
+      ? func(fullPathFile, data)
+      : env('languageFallback') && alternativePathExists
+        ? func(alternativeFullPathFile, data)
+        : void 0
   }
 
-  const formatFullPath = env('templatePathFormatter') ? env('templatePathFormatter') :
-    (template, target, format, type, lang) => format ?
-      `${lang}/${template}-${target}-${format}.${type}` :
-      `${lang}/${template}-${target}.${type}`
+  const formatFullPath = env('templatePathFormatter') ? env('templatePathFormatter')
+    : (template, target, format, type, lang) => format
+        ? `${lang}/${template}-${target}-${format}.${type}`
+        : `${lang}/${template}-${target}.${type}`
 
   service.processTemplate = (template, templateOptions, lang = defaultLanguage) => {
     const formatPathEjsBody = formatFullPath.bind(null, template, 'body', 'html', 'ejs')
@@ -65,13 +65,13 @@ module.exports = env => {
       processIfExists({ filename: pathEjsTextBody, formatter: formatPathEjsText }, templateOptions, renderEjs),
       processIfExists({ filename: pathEjsSubject, formatter: formatPathEjsSubject }, templateOptions, renderEjs)
     ])
-    .then(([ejsHtmlBody, pugHtmlBody, ejsTextBody, ejsSubject]) => {
-      return {
-        subject: (ejsSubject || '').trim(),
-        html: juice(ejsHtmlBody || pugHtmlBody || ''),
-        text: ejsTextBody
-      }
-    })
+      .then(([ejsHtmlBody, pugHtmlBody, ejsTextBody, ejsSubject]) => {
+        return {
+          subject: (ejsSubject || '').trim(),
+          html: juice(ejsHtmlBody || pugHtmlBody || ''),
+          text: ejsTextBody
+        }
+      })
   }
 
   /*
