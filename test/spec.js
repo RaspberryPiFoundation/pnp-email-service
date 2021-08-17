@@ -113,6 +113,6 @@ test('bad API call request', t => {
       return response.json()
     })
     .then(body => {
-      t.truthy(body.error.indexOf('"templateName" is required') > 0)
+      t.truthy(body.error.indexOf('"templateName" is required') != -1)
     })
 })

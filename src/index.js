@@ -6,7 +6,7 @@ const winston = require('winston')
 
 const Joi = require('joi')
 
-const schema = Joi.object().keys({
+const schema = Joi.object({
   templateName: Joi.string().required(),
   templateOptions: Joi.object().required(),
   emailOptions: Joi.object().required(),
@@ -21,7 +21,7 @@ exports.createRouter = (config = {}) => {
   router.use(bodyParser.json({}))
   router.post('/send', (req, res, next) => {
     const { body } = req
-    const result = Joi.validate(body, schema)
+    const result = schema.validate(body)
     if (result.error) {
       return res.status(400).json({
         error: result.error.message || String(result.error)
