@@ -40,7 +40,7 @@
     "nodemailer-ses-transport": "^1.5.1",
     "nodemailer-stub-transport": "^1.1.0",
     "pug": "^2.0.0-beta11",
-    "winston": "*"
+    "winston": "3.3.3"
   },
   "devDependencies": {
     "ava": "^3.15.0",
